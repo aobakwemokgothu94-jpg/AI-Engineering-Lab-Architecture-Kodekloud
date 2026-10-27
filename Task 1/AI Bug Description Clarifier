@@ -1,0 +1,144 @@
+# AI Bug Description Clarifier
+
+## 1. Project Overview
+
+The AI Bug Description Clarifier is a Python-based tool that transforms informal developer bug reports into clear, structured, and professional issue summaries using the OpenAI Chat Completion API.
+
+The tool accepts a bug description as input, constructs a parameterized prompt, sends it to the configured AI model, and prints the clarified summary to the console.
+
+## 2. Objectives
+
+- Initialize the OpenAI client using environment variables.
+- Accept developer-provided bug descriptions dynamically.
+- Generate structured and professional bug summaries.
+- Identify expected behavior and missing reproduction details.
+- Display the AI-generated result in the terminal.
+
+## 3. Technologies Used
+
+- Python 3
+- OpenAI Python SDK
+- OpenAI Chat Completion API
+- Python virtual environment (`venv`)
+- Environment variables for API configuration
+
+## 4. Project Location
+
+```text
+/root/openaiproject/
+├── bug_clarifier.py
+└── venv/
+```
+
+## 5. Environment Setup
+
+The virtual environment was created and activated, and the OpenAI SDK was installed.
+
+```bash
+cd /root/openaiproject
+
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+```
+
+**Installation result:**
+
+```text
+Successfully installed openai-3.39.0
+```
+
+The API credentials were loaded from `/root/.bash_profile` through environment variables, avoiding hardcoded credentials in the Python source.
+
+## 6. Input Bug Report
+
+The test input was:
+
+```text
+App keeps crashing when I click save.
+```
+
+## 7. Implementation
+
+The script is located at `bug_clarifier.py`.
+
+The `clarify_bug(description: str) -> str` function builds a prompt from the supplied description, calls the Chat Completion API, and returns the generated summary.
+
+The API configuration used was:
+
+| Parameter | Value |
+|---|---|
+| Model | `gpt-5.6-luna` |
+| Message role | `user` |
+| Maximum tokens | `200` |
+| Temperature | `0.0` |
+
+The main execution block stores the returned summary in a variable named `response` and prints it to the console.
+
+## 8. Execution
+
+The program was executed using:
+
+```bash
+cd /root/openaiproject
+source /root/.bash_profile
+source venv/bin/activate
+
+python bug_clarifier.py
+```
+
+## 9. Actual Output Preview
+
+The API successfully returned the following clarified bug summary:
+
+```text
+Title: Application crashes when clicking Save
+
+Observed Behavior:
+The application consistently crashes after the user
+clicks the Save button.
+
+Expected Behavior:
+The application should save the relevant changes
+successfully without crashing.
+
+Missing Information Needed to Reproduce:
+- Application name and version
+- Operating system and version
+- Steps leading up to clicking Save
+- Type of content or changes being saved
+- Whether the crash occurs every time or intermittently
+- Any error message, crash log, or stack trace
+- Relevant screenshots or screen recordings, if available
+```
+
+This is the actual output captured from the successful execution.
+
+## 10. Validation Results
+
+| Validation | Result |
+|---|---|
+| OpenAI SDK installation | Successful |
+| API key environment variable | Available |
+| API base URL environment variable | Available |
+| Python syntax compilation | Passed |
+| API request | Successful |
+| AI-generated summary | Printed to console |
+
+## 11. Learning Outcomes
+
+This task demonstrated how to:
+
+- Create and activate an isolated Python environment.
+- Install and use the OpenAI Python SDK.
+- Configure an API client with environment variables.
+- Build prompts dynamically from function arguments.
+- Send chat completion requests to an AI model.
+- Extract and print the generated response.
+- Improve informal bug reports by structuring observed behavior, expected behavior, and missing diagnostic information.
+
+## 12. Conclusion
+
+The AI Bug Description Clarifier was implemented and tested successfully. The program accepted the informal report, sent it to the configured OpenAI Chat Completion API, and printed a professional summary containing the observed behavior, expected behavior, and information needed to reproduce the issue.
+
+The successful execution confirms that the environment setup, API configuration, prompt construction, and response handling worked for the supplied test case.
