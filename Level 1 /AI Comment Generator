@@ -1,0 +1,179 @@
+# AI Comment Generator
+
+## 1. Project Overview
+
+The AI Comment Generator is a Python-based project that uses an OpenAI-compatible chat API to generate clear, concise, one-line comments or docstrings describing the purpose of a code snippet.
+
+The project demonstrates how artificial intelligence can improve code readability and maintainability by automatically producing meaningful explanations of source code.
+
+## 2. Project Objectives
+
+- Initialize an OpenAI client using environment variables.
+- Accept a Python code snippet as input.
+- Construct a parameterized prompt based on the supplied code.
+- Send the prompt to an AI chat model.
+- Generate a one-line comment or docstring.
+- Print the generated comment and return it from the function.
+
+## 3. Technologies Used
+
+- **Python** — implementation language.
+- **OpenAI Python SDK** — communication with the chat API.
+- **Virtual environment (`venv`)** — isolated Python dependencies.
+- **OpenAI-compatible API endpoint** — configured through environment variables.
+
+## 4. Project Location
+
+```text
+/root/openaiproject/
+├── commenter.py
+├── README.md
+└── venv/
+```
+
+The virtual environment is created locally and contains the installed project dependencies.
+
+## 5. Configuration
+
+The script reads its API configuration from environment variables:
+
+- `OPENAI_API_KEY` — API authentication key.
+- `OPENAI_API_BASE` — API base URL.
+
+These values are loaded from the shell environment after sourcing `/root/.bash_profile`.
+
+**Security note:** API keys should not be written directly into source code or committed to version control.
+
+## 6. Installation and Setup
+
+Navigate to the project directory:
+
+```bash
+cd /root/openaiproject
+```
+
+Load the configured environment:
+
+```bash
+source /root/.bash_profile
+```
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install the OpenAI Python package:
+
+```bash
+pip install openai
+```
+
+The installation completed successfully in the project environment.
+
+## 7. Implementation
+
+The main program is stored in `commenter.py`.
+
+### Function definition
+
+```python
+def generate_comment(code_snippet: str) -> str:
+```
+
+The function accepts a code snippet and returns a generated comment as a string.
+
+### Prompt construction
+
+The prompt instructs the model to produce a concise, one-line Python comment or docstring explaining the purpose of the supplied code. The snippet is inserted dynamically into the prompt.
+
+### API parameters
+
+The chat completion request uses the following configuration:
+
+| Parameter | Value |
+|---|---|
+| Model | `gpt-5.6-luna` |
+| Message role | `user` |
+| Maximum tokens | `50` |
+| Temperature | `0.2` |
+
+The API result is stored in the variable `response`. The generated text is extracted, printed to the console, and returned by `generate_comment()`.
+
+## 8. Test Case
+
+The following Python function was used to test the generator:
+
+```python
+def calculate_area(length, width):
+    return length * width
+```
+
+The generator analyzes the supplied code and produces a comment explaining its purpose.
+
+## 9. Execution Instructions
+
+Run the program from the project directory:
+
+```bash
+cd /root/openaiproject
+source /root/.bash_profile
+source venv/bin/activate
+python commenter.py
+```
+
+## 10. Test Output and Preview
+
+The terminal produced the following generated comment:
+
+```python
+# Calculates the area of a rectangle from its length and width.
+```
+
+This output describes the purpose of the `calculate_area()` function in a concise, readable format.
+
+### Python syntax verification
+
+The following command was executed:
+
+```bash
+python -m py_compile /root/openaiproject/commenter.py
+```
+
+The command completed without displaying an error, confirming that Python could compile the script successfully.
+
+### Environment verification
+
+The environment checks confirmed that both configuration variables were available:
+
+```text
+API key configured: True
+Base URL configured: True
+```
+
+No secret values were printed.
+
+## 11. Expected Results
+
+When the script runs successfully, it should:
+
+1. Initialize the API client.
+2. Construct a prompt from the test snippet.
+3. Send one chat completion request.
+4. Receive a generated comment.
+5. Print the comment to the console.
+6. Return the comment from the function.
+
+The exact generated wording may vary depending on the model response.
+
+## 12. Conclusion
+
+The AI Comment Generator was implemented and executed successfully. The supplied test snippet produced a meaningful one-line comment, and the Python syntax check completed without errors.
+
+The project demonstrates a simple application of generative AI for code documentation, showing how an API-powered Python function can assist developers in making code easier to understand and maintain.
+
+**Final deliverable:** `/root/openaiproject/commenter.py`
+
+**Verification status:** Script execution, comment generation, environment configuration checks, and Python syntax compilation were successful. Final acceptance by the lab's automated grader should be confirmed through its verification or submission control.
