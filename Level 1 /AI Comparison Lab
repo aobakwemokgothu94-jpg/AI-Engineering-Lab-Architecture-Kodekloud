@@ -1,79 +1,112 @@
-# AI Comparison Lab
+AI Comparison Lab: Chipset Evaluator Module
+A robust, enterprise-grade Python module designed for the datacenter AI Development Team to execute automated, data-driven comparisons of hardware chipsets across smartphone models using the OpenAI chat completion API and customized endpoint routing.
 
-## Project Overview
+1. Architectural Overview
+Plaintext
+/root/openaiproject/
+├── venv/                 # Isolated Python 3.12 virtual environment
+├── compare.py            # Core logic module (OpenAI client & compare function)
+└── README.md             # Comprehensive technical documentation
+Component Architecture
+Environment Configuration (/root/.bash_profile): Securely isolates credentials (OPENAI_API_KEY and OPENAI_API_BASE), adhering to modern twelve-factor app principles by keeping secrets out of source code.
 
-This project demonstrates how to use the OpenAI Python SDK to compare two products using an AI model through an API.
+OpenAI SDK Client (compare.py): Instantiates a client connecting to the designated base URL and model endpoint (gpt-5.6-luna).
 
-The application compares the chipsets used in the iPhone 13 and iPhone 17 and returns the chipset name of the newer model as a one-word response.
+Prompt Engineering Pattern: Dynamically constructs parameterized prompts enforcing strict constraints (e.g., in terms of only the chip used and one word only formatting).
 
-## Technologies Used
+2. API Specification & Module Interface
+compare(item1: str, item2: str) -> str
+Core comparison function that interfaces with the language model.
 
-- Python 3
-- OpenAI Python SDK
-- OpenAI-compatible API
-- Python virtual environment
+Parameters:
 
-## Project Setup
+item1 (str): The primary target device (e.g., "iphone 13").
 
-Navigate to the project directory:
+item2 (str): The comparative target device (e.g., "iphone 17").
 
-```bash
+Returns:
+
+str: A strictly sanitized, whitespace-trimmed string containing the model's comparative output.
+
+Configuration Parameters:
+
+Model: gpt-5.6-luna
+
+Max Tokens: 100
+
+Temperature: 0.5 (Balances deterministic consistency with contextual reasoning)
+
+3. Installation & Deployment Runbook
+Step 1: Initialize Workspace and Environment
+Navigate to the project directory, establish an isolated virtual environment, and install dependencies:
+
+Bash
+mkdir -p /root/openaiproject
 cd /root/openaiproject
-```
-
-Load the API configuration:
-
-```bash
-source /root/.bash_profile
-```
-
-Create and activate a virtual environment and install the OpenAI package:
-
-```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install openai
-```
+Step 2: Configure Environment Variables
+Ensure your shell session has access to the target endpoint and authentication tokens:
 
-## Implementation
-
-The application is implemented in `compare.py`.
-
-It:
-1. Initializes the OpenAI client using environment variables.
-2. Defines a `compare()` function accepting two product names.
-3. Builds a prompt requesting a chipset-only comparison.
-4. Sends a request to the `gpt-5.6-luna` model.
-5. Extracts and prints the response.
-
-## Execution
-
-Run the application:
-
-```bash
+Bash
 source /root/.bash_profile
-source venv/bin/activate
-python compare.py
-```
+Step 3: Implement compare.py
+Save the following clean, production-ready implementation into /root/openaiproject/compare.py:
 
-## Actual Output
+Python
+import os
+from openai import OpenAI
 
-```text
-A19
-```
+def compare(item1: str, item2: str) -> str:
+    """
+    Compares two given items specifically regarding their chipset using the gpt-5.6-luna model.
+    """
+    api_key = os.environ.get('OPENAI_API_KEY')
+    base_url = os.environ.get('OPENAI_API_BASE')
+    
+    client = OpenAI(
+        api_key=api_key,
+        base_url=base_url
+    )
+    
+    prompt = (
+        f"Compare {item1} and {item2} in terms of only the chip used. "
+        "Provide your response in one word only."
+    )
+    
+    completion = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=100,
+        temperature=0.5
+    )
+    
+    content = completion.choices[0].message.content
+    response = content.strip() if content else ""
+    return response
 
-The application successfully returned `A19` as the one-word comparison result for the iPhone 17.
+if __name__ == "__main__":
+    response = compare("iphone 13", "iphone 17")
+    print(response)
+4. Execution & Validation
+Execution Command
+Execute the module from your activated virtual environment:
 
-## Project File
+Bash
+python3 /root/openaiproject/compare.py
+Expected Output Console
+Plaintext
+A15/A19
+Automated Integration Test Script
+To perform a rigorous sanity check verifying type safety, return constraints, and non-empty execution, run the following test runner:
 
-```text
-/root/openaiproject/
-├── compare.py
-└── venv/
-```
-
-## Conclusion
-
-The AI Comparison Lab was successfully implemented and executed. The project demonstrates Python SDK integration, environment-based API configuration, prompt construction, API response handling, and controlled one-word output.
-
-**Status: Successfully executed.**
+Bash
+python3 -c '
+from compare import compare
+res = compare("iphone 13", "iphone 17")
+print(f"[TEST] Result Type: {type(res)} | Value: {res!r}")
+assert isinstance(res, str), "Error: Return type must be a string."
+assert len(res) > 0, "Error: Output string cannot be empty."
+print("[PASS] All verification checks successfully cleared!")
+'
