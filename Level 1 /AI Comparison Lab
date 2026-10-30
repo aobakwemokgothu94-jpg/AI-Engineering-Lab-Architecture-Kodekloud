@@ -1,0 +1,79 @@
+# AI Comparison Lab
+
+## Project Overview
+
+This project demonstrates how to use the OpenAI Python SDK to compare two products using an AI model through an API.
+
+The application compares the chipsets used in the iPhone 13 and iPhone 17 and returns the chipset name of the newer model as a one-word response.
+
+## Technologies Used
+
+- Python 3
+- OpenAI Python SDK
+- OpenAI-compatible API
+- Python virtual environment
+
+## Project Setup
+
+Navigate to the project directory:
+
+```bash
+cd /root/openaiproject
+```
+
+Load the API configuration:
+
+```bash
+source /root/.bash_profile
+```
+
+Create and activate a virtual environment and install the OpenAI package:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+```
+
+## Implementation
+
+The application is implemented in `compare.py`.
+
+It:
+1. Initializes the OpenAI client using environment variables.
+2. Defines a `compare()` function accepting two product names.
+3. Builds a prompt requesting a chipset-only comparison.
+4. Sends a request to the `gpt-5.6-luna` model.
+5. Extracts and prints the response.
+
+## Execution
+
+Run the application:
+
+```bash
+source /root/.bash_profile
+source venv/bin/activate
+python compare.py
+```
+
+## Actual Output
+
+```text
+A19
+```
+
+The application successfully returned `A19` as the one-word comparison result for the iPhone 17.
+
+## Project File
+
+```text
+/root/openaiproject/
+├── compare.py
+└── venv/
+```
+
+## Conclusion
+
+The AI Comparison Lab was successfully implemented and executed. The project demonstrates Python SDK integration, environment-based API configuration, prompt construction, API response handling, and controlled one-word output.
+
+**Status: Successfully executed.**
