@@ -1,0 +1,68 @@
+# AI Text Converter Module
+
+A Python-based AI utility module that leverages an OpenAI-compatible chat model to transform lengthy paragraphs into clear, concise, and structured bullet points for faster understanding and improved productivity.
+
+---
+
+## Prerequisites & Installation
+
+Before running the module, ensure you have set up a Python virtual environment and installed the required dependencies:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+Configuration
+The module relies on your OpenAI API credentials and base URL configured in your environment or /root/.bash_profile:
+
+OPENAI_API_KEY: Your private API key.
+
+OPENAI_API_BASE: The API base URL endpoint (e.g., https://api.ai.kodekloud.com).
+
+Usage
+The module exposes a primary function convert_to_bullets(text: str) -> str.
+
+You can run the script directly from your terminal:
+
+Bash
+python3 converter.py
+Example Code (converter.py)
+Python
+import os
+from openai import OpenAI
+
+# Initialize the OpenAI client using environment variables
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+
+def convert_to_bullets(text: str) -> str:
+    """
+    Constructs a parameterized prompt and converts a given paragraph 
+    into short, meaningful bullet points using the configured LLM.
+    """
+    prompt = f"Please convert the following paragraph into short, meaningful bullet points:\n\n{text}"
+    
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150,
+        temperature=0.1
+    ).choices[0].message.content
+    
+    return response
+
+if __name__ == "__main__":
+    sample_paragraph = (
+        "Artificial Intelligence is transforming industries by automating tasks, "
+        "improving decision-making, and enabling new innovations across healthcare, finance, and education."
+    )
+    print(convert_to_bullets(sample_paragraph))
+Parameters
+Model: gpt-5.6-luna
+
+Max Tokens: 150
+
+Temperature: 0.1 (optimized for deterministic and precise output)
+EOF
