@@ -1,0 +1,171 @@
+# AI Email Assistant
+
+## Project Overview
+
+The AI Email Assistant is a Python-based application developed to automate written communication tasks. It uses an OpenAI-compatible API to rewrite informal email messages into polite and professional communication.
+
+The application accepts email text, constructs a parameterized prompt, sends it to the configured chat model, and prints the rewritten email.
+
+## Objectives
+
+- Initialize an OpenAI client using the provided API credentials and base URL.
+- Create a function named `rewrite_email(text: str) -> str`.
+- Construct a prompt that requests polite and professional rewriting.
+- Send the prompt to the specified chat model.
+- Retrieve and print the generated email response.
+
+## Technologies Used
+
+- Python 3
+- OpenAI Python SDK
+- OpenAI-compatible API
+- Virtual environment (`venv`)
+
+## Project Structure
+
+```text
+/root/openaiproject/
+├── email_assistant.py
+└── venv/
+```
+
+## Installation
+
+Create and activate a Python virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install the OpenAI package:
+
+```bash
+pip install openai
+```
+
+Installation verification:
+
+```text
+Successfully installed openai-3.42.0
+```
+
+## Configuration
+
+The application reads its API credentials from environment variables:
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+```
+
+The environment variables are loaded from the provided shell profile.
+
+## Application Implementation
+
+### Function: `rewrite_email`
+
+The function accepts one parameter, `text`, and constructs a prompt requesting a polite and professional rewrite.
+
+```python
+def rewrite_email(text: str) -> str:
+    prompt = f"""
+Rewrite the following email to sound polite and professional.
+Keep the original meaning while improving its tone and wording.
+
+Email:
+{text}
+
+Return only the rewritten email.
+"""
+```
+
+### Model Configuration
+
+The application sends the prompt using the following parameters:
+
+| Parameter | Value |
+|---|---|
+| Model | `gpt-5.6-luna` |
+| Message role | `user` |
+| Maximum tokens | `60` |
+| Temperature | `0.1` |
+
+### API Request
+
+```python
+completion = client.chat.completions.create(
+    model="gpt-5.6-luna",
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    max_tokens=60,
+    temperature=0.1
+)
+
+return completion.choices[0].message.content.strip()
+```
+
+### Input and Response
+
+```python
+email_text = "hey send me that report asap"
+
+response = rewrite_email(email_text)
+
+print(response)
+```
+
+## Execution
+
+Run the application:
+
+```bash
+python /root/openaiproject/email_assistant.py
+```
+
+### Actual Execution Output
+
+```text
+Could you please send me that report as soon as possible?
+```
+
+## Testing and Verification
+
+### Python Syntax Validation
+
+Command:
+
+```bash
+python -m py_compile /root/openaiproject/email_assistant.py
+```
+
+Result: Successful compilation without syntax errors.
+
+### API Execution
+
+The application successfully executed its API request and printed the rewritten email.
+
+### Verification Summary
+
+| Test | Result |
+|---|---|
+| OpenAI package installation | PASS |
+| Python syntax validation | PASS |
+| Client initialization | PASS |
+| Prompt construction | PASS |
+| Chat completion request | PASS |
+| Rewritten email output | PASS |
+
+## Conclusion
+
+The AI Email Assistant was successfully implemented and executed.
+
+The application demonstrates how Python and an OpenAI-compatible chat API can automate professional email rewriting. The `rewrite_email()` function accepts informal text and returns a more polite and professional version while preserving the original meaning.
+
+**Project Status: COMPLETED AND VERIFIED**
