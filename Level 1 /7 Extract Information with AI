@@ -1,0 +1,166 @@
+# AI Resume Extractor
+
+## Project Overview
+
+The AI Resume Extractor is a Python-based application designed to identify and extract job-relevant keywords from candidate resume text using an OpenAI-compatible chat API.
+
+The application accepts a resume paragraph, constructs a parameterized prompt, sends it to an AI model, and returns exactly five comma-separated keywords.
+
+## Objectives
+
+- Initialize an OpenAI client using environment-based API credentials.
+- Implement the `extract_keywords(text: str) -> str` function.
+- Construct a prompt that explicitly demands exactly five comma-separated keywords.
+- Submit the prompt to the specified chat model.
+- Print the extracted keywords to the console.
+
+## Technologies Used
+
+- Python 3
+- OpenAI Python SDK
+- OpenAI-compatible API
+- Virtual environment (`venv`)
+
+## Project Structure
+
+```text
+/root/openaiproject/
+├── resume_extractor.py
+├── email_assistant.py
+└── venv/
+```
+
+## Installation
+
+Navigate to the project directory:
+
+```bash
+cd /root/openaiproject
+```
+
+Create and activate the virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install the OpenAI package:
+
+```bash
+pip install openai
+```
+
+Installation verification:
+
+```text
+Successfully installed openai-3.42.0
+OpenAI installed successfully
+```
+
+## API Configuration
+
+The application reads the API key and base URL from environment variables loaded through `/root/.bash_profile`.
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+```
+
+## Application Implementation
+
+### Function: extract_keywords
+
+The function accepts one parameter, `text`, containing the candidate's resume information.
+
+```python
+def extract_keywords(text: str) -> str:
+    prompt = f"""
+Extract exactly five job-relevant keywords from the following resume text.
+
+Return exactly five comma-separated keywords.
+Do not include numbering, explanations, or additional text.
+
+Resume:
+{text}
+"""
+```
+
+### AI Model Parameters
+
+| Parameter | Value |
+|---|---|
+| Model | `gpt-5.6-luna` |
+| Message role | `user` |
+| Maximum tokens | `100` |
+| Temperature | `0` |
+
+### API Request
+
+```python
+response = client.chat.completions.create(
+    model="gpt-5.6-luna",
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    max_tokens=100,
+    temperature=0
+)
+```
+
+The function returns the generated response as a stripped string.
+
+## Resume Input
+
+The application was tested using the following resume paragraph:
+
+```text
+Experienced DevOps engineer skilled in Python,
+Kubernetes, Docker, CI/CD pipelines, and cloud automation.
+```
+
+## Execution
+
+Run the application:
+
+```bash
+python -m py_compile resume_extractor.py
+python resume_extractor.py
+```
+
+### Actual Execution Output
+
+```text
+Python, Kubernetes, Docker, CI/CD, Cloud Automation
+```
+
+## Testing and Verification
+
+| Test | Result |
+|---|---|
+| Virtual environment creation | PASS |
+| OpenAI installation | PASS |
+| Python syntax validation | PASS |
+| OpenAI client initialization | PASS |
+| Parameterized prompt construction | PASS |
+| Chat completion request | PASS |
+| Five-keyword output | PASS |
+
+## Conclusion
+
+The AI Resume Extractor was successfully implemented and executed.
+
+The application uses Python and an OpenAI-compatible chat model to identify five relevant technical and professional keywords from resume text.
+
+The successful execution returned:
+
+**Python, Kubernetes, Docker, CI/CD, Cloud Automation**
+
+The task demonstrates the use of AI-powered text extraction, prompt engineering, API integration, and Python function development.
+
+**Project Status: COMPLETED AND VERIFIED**
