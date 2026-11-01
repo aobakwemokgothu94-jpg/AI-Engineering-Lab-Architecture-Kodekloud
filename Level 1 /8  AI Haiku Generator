@@ -1,0 +1,146 @@
+# AI Haiku Generator
+
+## Project Overview
+
+The AI Haiku Generator is a Python-based application developed for the Nautilus AI Development Team. It uses the OpenAI API to generate short, expressive three-line poems based on a user-provided topic.
+
+The application accepts a topic as input and sends a parameterized prompt to an AI chat model, instructing it to follow the traditional 5-7-5 syllable structure.
+
+## Objectives
+
+- Initialize an OpenAI client using environment variables.
+- Create a reusable `generate_haiku(topic: str) -> str` function.
+- Generate haikus based on dynamically supplied topics.
+- Follow the traditional three-line, 5-7-5 syllable format.
+- Display the generated poem in the terminal.
+
+## Technologies Used
+
+- Python 3
+- OpenAI Python SDK
+- OpenAI Chat Completions API
+- Virtual Environment (`venv`)
+
+## Project File
+
+```text
+/root/openaiproject/
+├── haiku_generator.py
+└── venv/
+```
+
+## Implementation
+
+The application is implemented in `haiku_generator.py`.
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+
+
+def generate_haiku(topic: str) -> str:
+    parameterized_prompt = f"""
+Write a haiku about {topic}.
+
+Strictly follow the traditional 5-7-5 syllable structure:
+- First line: exactly 5 syllables.
+- Second line: exactly 7 syllables.
+- Third line: exactly 5 syllables.
+
+Return only the three lines of the haiku.
+Do not include a title, explanation, or syllable counts.
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {"role": "user", "content": parameterized_prompt}
+        ],
+        max_tokens=200,
+        temperature=0.0
+    )
+
+    return response.choices[0].message.content.strip()
+
+
+topic = "sky"
+response = generate_haiku(topic)
+
+print(response)
+```
+
+## Environment Setup
+
+Navigate to the project directory, create the virtual environment, activate it, and install the OpenAI package.
+
+```bash
+cd /root/openaiproject
+
+source /root/.bash_profile
+
+python3 -m venv venv
+
+source venv/bin/activate
+
+python -m pip install openai
+```
+
+## Execution
+
+Compile the Python module to check for syntax errors:
+
+```bash
+python -m py_compile haiku_generator.py
+```
+
+Execute the application:
+
+```bash
+python haiku_generator.py
+```
+
+## Execution Output
+
+The application successfully generated the following haiku for the topic **sky**:
+
+```text
+Blue clouds drift slowly
+Sunlight warms the quiet earth
+Night blooms in starlight
+```
+
+## Configuration Details
+
+| Parameter | Value |
+|---|---|
+| AI Model | `gpt-5.6-luna` |
+| Function | `generate_haiku(topic: str) -> str` |
+| Input Topic | `sky` |
+| Maximum Tokens | `200` |
+| Temperature | `0.0` |
+| Prompt | Parameterized |
+| Output | Three distinct lines |
+
+## Results
+
+The implementation successfully:
+
+1. Initialized the OpenAI client using session environment variables.
+2. Installed and used the OpenAI Python SDK.
+3. Created the parameterized `generate_haiku()` function.
+4. Submitted the topic to the specified AI model.
+5. Received and displayed a three-line haiku.
+6. Passed Python syntax compilation.
+
+The output was generated successfully. The 5-7-5 syllable pattern is requested in the prompt; independent syllable validation was not performed.
+
+## Conclusion
+
+The AI Haiku Generator demonstrates how Python and large language models can be integrated to automate creative text generation. It provides a reusable function that accepts different topics and produces short poetic responses through the OpenAI API.
+
+**Task Status:** Successfully executed and output verified.
