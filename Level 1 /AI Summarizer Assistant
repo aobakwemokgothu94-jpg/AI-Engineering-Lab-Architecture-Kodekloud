@@ -1,0 +1,64 @@
+# AI Summarizer Assistant
+
+The **AI Summarizer Assistant** is a tool built by the datacenter AI Engineering Team to transform lengthy or unclear developer-reported issues into concise, easy-to-understand one-line summaries. This improves clarity, reduces ambiguity, and makes bug reports much easier to analyze and reproduce.
+
+## Project Structure
+
+```text
+/root/openaiproject/
+│
+├── venv/             # Python virtual environment
+└── summarizer.py     # Core script containing the summarization logic
+Prerequisites & Installation
+Navigate to your project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment, then install the required dependencies:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+Ensure your API credentials (OPENAI_API_KEY and OPENAI_API_BASE) are configured in your environment or /root/.bash_profile.
+
+Usage
+Run the summarizer.py script directly to generate a one-line summary from the default paragraph:
+
+Bash
+python3 summarizer.py
+Python Function Preview
+Python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+
+def summarize(text: str) -> str:
+    prompt = f"Summarize the following paragraph into a single-line summary:\n\n{text}"
+    
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=80,
+        temperature=0.5
+    ).choices[0].message.content.strip()
+    
+    return response
+Model Configurations
+Model: gpt-5.6-luna
+
+Temperature: 0.5
+
+Max Tokens: 80
+
+
+### How to add this via terminal/nano:
+1. Open or create the README file:
+   ```bash
+   nano /root/openaiproject/README.md
