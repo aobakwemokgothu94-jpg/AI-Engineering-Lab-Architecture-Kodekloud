@@ -1,0 +1,55 @@
+# AI Commit Generator 🤖💬
+
+The **AI Commit Generator** is a Python-based developer-assistance tool built for the Nautilus AI Development Team. It leverages the OpenAI API to analyze raw code change summaries and automatically generate clean, standardized, and concise **Conventional Commit** messages to ensure clarity and consistency across version control histories.
+
+---
+
+## Features ✨
+
+* **Conventional Commit Compliance:** Strictly categorizes changes using standard types (`feat`, `fix`, `docs`).
+* **Concise Subject Lines:** Automatically generates clear, action-oriented descriptions under 50 characters.
+* **Configurable API Integration:** Seamlessly connects using standard environment credentials (`OPENAI_API_KEY` and `OPENAI_API_BASE`).
+* **Strict Formatting:** Uses deterministic generation parameters (`temperature=0.0`) to guarantee clean, raw-text outputs without extra commentary.
+
+---
+
+## Project Structure 📁
+
+```text
+/root/openaiproject/
+├── venv/                   # Python virtual environment
+├── commit_generator.py     # Main application script
+└── README.md               # Project documentation
+Installation & Setup 🛠️
+Clone or navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a Python virtual environment:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+Install dependencies:
+
+Bash
+pip install openai
+Configure your environment variables:
+Ensure your credentials are available in your shell session (typically loaded from ~/.bash_profile):
+
+Bash
+source ~/.bash_profile
+Usage 🚀
+To run the generator script and output a commit message based on your code changes, execute:
+
+Bash
+python3 commit_generator.py
+Preview & Output 📊
+Input Change Summary
+Python
+summary = "Added a new user registration endpoint and fixed a typo in the README file."
+Generated Terminal Output
+Plaintext
+feat: add user registration endpoint and fix README typo
+License 📝
+Internal Nautilus AI Development Team tooling. All rights reserved.
