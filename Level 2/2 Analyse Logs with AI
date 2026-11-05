@@ -1,0 +1,51 @@
+# Log Analyzer & Anomaly Detector
+
+A Python-based utility developed for the xfusion AI Reliability team to automatically monitor application health, detect critical production anomalies from log files, and generate concise, human-readable impact summaries using the OpenAI API.
+
+## Features
+- **Automated Log Parsing:** Reads raw application logs (`app.log`).
+- **AI-Powered Diagnostics:** Uses an auditor persona to isolate critical failures and evaluate their immediate operational impact.
+- **Structured Summaries:** Outputs a clean, two-part summary detailing the specific error type and immediate impact.
+
+---
+
+## Prerequisites
+- Python 3.10+
+- OpenAI API Key & Base URL configured in `/root/.bash_profile`
+
+---
+
+## Setup & Installation
+
+1. Navigate to the project directory:
+   ```bash
+   cd /root/openaiproject
+Create and activate a virtual environment, then install the OpenAI SDK:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+Load your environment variables:
+
+Bash
+source /root/.bash_profile
+Usage
+Run the script to analyze the log file and print the raw summary to the console:
+
+Bash
+python3 log_analyzer.py
+Project Structure
+Plaintext
+/root/openaiproject/
+│
+├── app.log            # Target log file for anomaly detection
+├── log_analyzer.py    # Core script containing the detection logic
+├── README.md          # Project documentation
+└── venv/              # Python virtual environment
+
+---
+
+### Project Preview / Description (For sharing or submission notes)
+
+> **Log Analyzer & Anomaly Detector** is an automated production health-monitoring tool built in Python. It interfaces securely with the OpenAI API using custom system instructions to parse raw application logs (`app.log`), isolate critical failures (such as `OutOfMemoryError` heap exhaustion), and output precise, two-part incident summaries. Designed for rapid root-cause assessment, it minimizes downtime and helps reliability engineers instantly understand system impact.
