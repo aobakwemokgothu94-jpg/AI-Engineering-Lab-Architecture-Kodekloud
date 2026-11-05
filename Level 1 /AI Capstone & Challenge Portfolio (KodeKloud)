@@ -1,0 +1,85 @@
+AI Capstone & Challenge Portfolio (KodeKloud)
+Welcome to the AI Engineering and LLM Capstone repository showcasing automated code analysis, keyword extraction, model comparison engines, and comment generation workflows using the OpenAI API.
+
+Repository Structure & Module Previews
+1. compare.py — Chip Comparison Engine
+Focus: Automated Model Comparison via OpenAI Chat Completions.
+
+Preview / Implementation:
+
+Defines a parameterized function compare(item1: str, item2: str) -> str that accepts two device names.
+
+Sends structured prompts to gpt-5.6-luna using configured environment credentials (OPENAI_API_KEY, OPENAI_API_BASE).
+
+Enforces specific constraints on temperature and token generation to output precise one-word chip comparisons (e.g., A19).
+
+Sample Code Snippet:
+
+Python
+import os
+from openai import OpenAI
+
+api_key = os.environ.get("OPENAI_API_KEY")
+base_url = os.environ.get("OPENAI_API_BASE")
+client = OpenAI(api_key=api_key, base_url=base_url)
+
+def compare(item1: str, item2: str) -> str:
+    prompt = f"Compare {item1} and {item2} in terms of only the chip used. State only the chip model name, in exactly one single word."
+    res = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=100,
+        temperature=0.5
+    )
+    response = res.choices[0].message.content.strip()
+    print(response)
+    return response
+2. resume_extractor.py — Smart Resume Keyword Analyzer
+Focus: Automated Information Extraction for Candidate Profiles.
+
+Preview / Implementation:
+
+Defines extract_keywords(text: str) -> str to parse professional resume paragraphs.
+
+Formats prompts demanding exactly five comma-separated job-relevant keywords.
+
+Leverages deterministic generation (temperature=0) to ensure reliable, clean keyword outputs.
+
+Sample Output:
+
+Plaintext
+Python, Kubernetes, Docker, CI/CD, cloud automation
+3. commenter.py — AI Code Comment Generator
+Focus: Automated Code Documentation & Maintainability.
+
+Preview / Implementation:
+
+Defines generate_comment(code_snippet: str) -> str to analyze raw Python snippets.
+
+Constructs prompts instructing the model to generate a clear, one-line docstring or comment explaining code functionality.
+
+Sample Output:
+
+Python
+"""Calculate and return the area of a rectangle from its length and width."""
+Getting Started & Local Execution
+Clone or navigate to your working project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate your Python virtual environment:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip openai
+Load your environment profile variables:
+
+Bash
+source /root/.bash_profile
+Run any of the modules using python3:
+
+Bash
+python3 compare.py
+python3 resume_extractor.py
+python3 commenter.py
