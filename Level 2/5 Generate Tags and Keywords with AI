@@ -1,0 +1,73 @@
+# Product Tag and Keyword Generator
+
+## Project Overview
+The **Product Tag and Keyword Generator** is a Python-based AI marketing assistant developed for the devops AI Commerce team. It interacts with the OpenAI API to automatically generate an attention-grabbing product title and an SEO-optimized list of low-competition keywords based on a product's description and target tone.
+
+---
+
+## Features
+* **Tone-Aware Titles:** Generates short, punchy product titles (4–8 words) tailored to specific branding tones (e.g., *Rugged and Adventurous*).
+* **SEO Keyword Optimization:** Automatically outputs exactly ten comma-separated keywords with no spaces around commas for tagging.
+* **Strict Formatting Enforcement:** Ensures the final output strictly adheres to a clean, two-line console response format.
+
+---
+
+## Output Format
+The script returns an exact two-line structure:
+```text
+[Product Title]
+[keyword1,keyword2,keyword3,keyword4,keyword5,keyword6,keyword7,keyword8,keyword9,keyword10]
+How to Run
+Navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment, then install dependencies:
+
+Bash
+python3 -m venv venv && source venv/bin/activate && pip install openai
+Execute the generator script:
+
+Bash
+python3 tag_generator.py
+
+---
+
+### Command to Save the `README.md`
+Run this terminal command to save the documentation directly into your project:
+
+```bash
+cat << 'EOF' > README.md
+# Product Tag and Keyword Generator
+
+## Project Overview
+The **Product Tag and Keyword Generator** is a Python-based AI marketing assistant developed for the devops AI Commerce team. It interacts with the OpenAI API to automatically generate an attention-grabbing product title and an SEO-optimized list of low-competition keywords based on a product's description and target tone.
+
+---
+
+## Features
+* **Tone-Aware Titles:** Generates short, punchy product titles (4–8 words) tailored to specific branding tones (e.g., *Rugged and Adventurous*).
+* **SEO Keyword Optimization:** Automatically outputs exactly ten comma-separated keywords with no spaces around commas for tagging.
+* **Strict Formatting Enforcement:** Ensures the final output strictly adheres to a clean, two-line console response format.
+
+---
+
+## Output Format
+The script returns an exact two-line structure:
+```text
+[Product Title]
+[keyword1,keyword2,keyword3,keyword4,keyword5,keyword6,keyword7,keyword8,keyword9,keyword10]
+How to Run
+Navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment, then install dependencies:
+
+Bash
+python3 -m venv venv && source venv/bin/activate && pip install openai
+Execute the generator script:
+
+Bash
+python3 tag_generator.py
+EOF
