@@ -1,0 +1,83 @@
+# Structured Quiz Generator
+
+## Project Overview
+The **Structured Quiz Generator** is an automated learning tool built in Python for the xfusion AI Learning platform. It interacts with the OpenAI API to dynamically generate a single, strict JSON-formatted multiple-choice question (MCQ) on technical topics like the Linux operating system.
+
+---
+
+## Features
+* **Strict JSON Output:** Enforces output schema using system prompts to guarantee a valid JSON array containing a single question object.
+* **OpenAI Integration:** Utilizes the OpenAI client with custom `base_url`, `api_key`, and parameters (`gpt-5.6-luna`, `temperature=0.3`, `max_tokens=200`).
+* **Modular Function Design:** Implements `generate_quiz(topic: str) -> str` for easy integration into automated learning modules.
+
+---
+
+## JSON Output Schema
+The generated quiz output strictly follows this structure:
+```json
+[
+  {
+    "question": "The question text.",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": "The correct answer text."
+  }
+]
+How to Run
+Navigate to your project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment, then install dependencies:
+
+Bash
+python3 -m venv venv && source venv/bin/activate && pip install openai
+Execute the script:
+
+Bash
+python3 quiz_generator.py
+
+---
+
+### Command to Save the `README.md`
+Run this command in your terminal to save the documentation directly into your project:
+
+```bash
+cat << 'EOF' > README.md
+# Structured Quiz Generator
+
+## Project Overview
+The **Structured Quiz Generator** is an automated learning tool built in Python for the xfusion AI Learning platform. It interacts with the OpenAI API to dynamically generate a single, strict JSON-formatted multiple-choice question (MCQ) on technical topics like the Linux operating system.
+
+---
+
+## Features
+* **Strict JSON Output:** Enforces output schema using system prompts to guarantee a valid JSON array containing a single question object.
+* **OpenAI Integration:** Utilizes the OpenAI client with custom `base_url`, `api_key`, and parameters (`gpt-5.6-luna`, `temperature=0.3`, `max_tokens=200`).
+* **Modular Function Design:** Implements `generate_quiz(topic: str) -> str` for easy integration into automated learning modules.
+
+---
+
+## JSON Output Schema
+The generated quiz output strictly follows this structure:
+```json
+[
+  {
+    "question": "The question text.",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": "The correct answer text."
+  }
+]
+How to Run
+Navigate to your project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment, then install dependencies:
+
+Bash
+python3 -m venv venv && source venv/bin/activate && pip install openai
+Execute the script:
+
+Bash
+python3 quiz_generator.py
+EOF
