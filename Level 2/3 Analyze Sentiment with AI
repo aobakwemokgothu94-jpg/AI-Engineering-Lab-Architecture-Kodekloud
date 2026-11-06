@@ -1,0 +1,38 @@
+# AI Sentiment Analyzer
+
+A Python-based AI tool that uses the OpenAI API to analyze and categorize the sentiment of developer communications into Positive, Negative, or Neutral.
+
+## Project Structure
+
+```text
+/root/openaiproject/
+├── venv/                  # Python virtual environment
+├── sentiment_analyzer.py  # Main script for sentiment analysis
+└── README.md              # Project documentation
+Setup and Installation
+Navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+Install dependencies:
+
+Bash
+pip install openai
+Load your environment variables:
+
+Bash
+source /root/.bash_profile
+Usage
+Run the sentiment analysis script:
+
+Bash
+python3 sentiment_analyzer.py
+Preview / Example Output
+Plaintext
+Sentiment: Positive
+Reason: The speaker expresses clear happiness and satisfaction with the new update.
