@@ -1,0 +1,85 @@
+Part 1: Project Capstone Portfolio Summary
+Project 1: AI Commit Generator (commit_generator.py)
+Objective: Automate semantic version control history by transforming free-form code change descriptions into standardized, clean Conventional Commit messages.
+
+Architecture & Implementation:
+
+Utilizes the openai Python client configured with environment-based authentication (OPENAI_API_KEY and OPENAI_API_BASE).
+
+Employs the gpt-5.6-luna model with a strict temperature of 0.0 to eliminate hallucinations and guarantee deterministic adherence to formatting guidelines.
+
+Enforces a strict single-line output constraint containing a single colon separator in the exact <type>: <subject> structure.
+
+Project 2: AI Structured Quiz Generator (quiz_generator.py)
+Objective: Streamline automated learning module creation by generating interactive multiple-choice questions (MCQs) programmatically in a rigid JSON schema format.
+
+Architecture & Implementation:
+
+Combines system-level and user-level prompting to enforce exact JSON output contracts without stray markdown wrappers or conversational filler.
+
+Integrates the gpt-5.6-luna model with a controlled temperature (0.3) for optimal creativity balanced with structural syntax compliance.
+
+Delivers a validated JSON array containing the exact schema attributes: question, options (array of 4 strings), and answer.
+
+Part 2: GitHub Portfolio Markdown Preview
+You can copy and paste the markdown below directly into your repository's README.md file:
+
+Markdown
+# AI-Powered Developer & Learning Automation Tools
+
+A collection of lightweight Python automation utilities leveraging custom AI endpoints to enhance engineering workflows and educational module generation.
+
+---
+
+## 1. AI Commit Generator
+
+A production-ready utility that parses code modification descriptions and standardizes them into clean [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Features
+* **Deterministic Formatting:** Configured with zero temperature (`0.0`) to ensure strict adherence to the `<type>: <subject>` pattern.
+* **Type Classification:** Automatically categorizes tasks into `feat`, `fix`, or `docs`.
+* **Single-Line Guarantee:** Strips extra whitespace and commentary for direct terminal or pipeline integration.
+
+### Quick Start
+```python
+import os
+from openai import OpenAI
+
+def generate_commit(changes: str) -> str:
+    client = OpenAI(
+        api_key=os.environ.get('OPENAI_API_KEY'),
+        base_url=os.environ.get('OPENAI_API_BASE')
+    )
+    prompt = f"Analyze the input changes and choose the appropriate commit type from: feat, fix, or docs. Generate a concise subject (under 50 characters). The output must be only the commit message in the exact format: <type>: <subject>. Changes: {changes}"
+    
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=250,
+        temperature=0.0
+    )
+    return response.choices[0].message.content.strip()
+2. AI Structured Quiz Generator
+An automated education pipeline utility designed to produce rigid, schema-compliant multiple-choice questions (MCQs) for e-learning platforms.
+
+Features
+Strict Schema Compliance: Forces output into a validated JSON array containing exact keys (question, options, answer).
+
+System Prompt Enforcement: Uses system-level role constraints to prevent unauthorized conversational prose or markdown code-block bleeding.
+
+Output Schema Example
+JSON
+[
+  {
+    "question": "Which Linux command is used to list files and directories in the current directory?",
+    "options": ["cd", "ls", "pwd", "mkdir"],
+    "answer": "ls"
+  }
+]
+Setup & Installation
+Clone the repository and run the setup script:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
