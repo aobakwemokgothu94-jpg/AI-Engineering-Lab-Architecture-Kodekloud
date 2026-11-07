@@ -1,0 +1,121 @@
+AI Code Gen & Security Review Pipeline
+This repository implements a two-stage automated AI engineering pipeline in Python (pipeline.py). The application leverages OpenAI's model (gpt-5.6-luna) to programmatically generate a web scraper based on technical requirements, followed by an automated security review stage to analyze code for vulnerabilities and adherence to best practices.
+
+🏗️ Architecture & Pipeline Design
+The pipeline consists of two primary sequential stages:
+
+Stage 1: The Developer (generate_code)
+
+Input: Reads requirements from requirements.txt.
+
+Action: Calls the OpenAI API (temperature=0.0) to generate a Python web scraper script designed to extract <h2> headlines from example.com.
+
+Output: Saves the clean code directly to web_scraper.py.
+
+Stage 2: The Reviewer (review_code)
+
+Input: Reads the generated web_scraper.py file.
+
+Action: Queries the OpenAI API (temperature=0.5) with a specialized security architect prompt to inspect for vulnerabilities (e.g., missing timeout controls, absent User-Agent headers, and lack of HTTP error handling).
+
+Output: Returns a strictly formatted raw JSON string containing a list of findings.
+
+🚀 Getting Started & Execution
+1. Environment Setup
+Navigate to your project workspace, create and activate a virtual environment, and install the required openai dependency:
+
+Bash
+cd /root/openaiproject
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+2. Pipeline Implementation (pipeline.py)
+Here is the complete code structure used for the pipeline:
+
+Python
+import os
+from openai import OpenAI
+
+# Load environment credentials from .bash_profile if present
+if os.path.exists("/root/.bash_profile"):
+    with open("/root/.bash_profile", "r") as f:
+        for line in f:
+            if line.startswith("export "):
+                parts = line.replace("export ", "").strip().split("=", 1)
+                if len(parts) == 2:
+                    os.environ[parts[0]] = parts[1].strip('"\'')
+
+# Initialize OpenAI Client
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_API_BASE")
+)
+
+def generate_code(requirements_path: str, output_path: str):
+    """Stage 1: Generates Python web scraper code based on requirements."""
+    full_req_path = os.path.join("/root/openaiproject", requirements_path)
+    with open(full_req_path, "r") as f:
+        requirements_content = f.read()
+
+    prompt = (
+        f"Based on these requirements: {requirements_content}\n\n"
+        "Write a Python script that scrapes all <h2> headlines from 'example.com' and prints them. "
+        "Include imports and a main execution block. Respond ONLY with the raw Python code."
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+
+    code_content = response.choices[0].message.content.strip()
+    full_output_path = os.path.join("/root/openaiproject", output_path)
+    with open(full_output_path, "w") as f:
+        f.write(code_content)
+
+def review_code(code_path: str) -> str:
+    """Stage 2: Reviews the generated code for security flaws and returns raw JSON."""
+    full_code_path = os.path.join("/root/openaiproject", code_path)
+    with open(full_code_path, "r") as f:
+        code_content = f.read()
+
+    system_prompt = (
+        "You are a senior security architect. Review the attached Python code for any security or "
+        "best-practice vulnerabilities (e.g., missing 'User-Agent' headers, no error handling for HTTP 4xx/5xx requests). "
+        "Output a JSON object with a single key 'findings', which is a list of strings, each string describing one vulnerability. "
+        "If no issues, return an empty list. Crucially, you must ONLY return the raw JSON, with no Markdown fences."
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Here is the code to review:\n\n{code_content}"}
+        ],
+        temperature=0.5
+    )
+
+    return response.choices[0].message.content.strip()
+
+if __name__ == "__main__":
+    generate_code('requirements.txt', 'web_scraper.py')
+    final_json = review_code('web_scraper.py')
+    print(final_json)
+3. Running the Script
+Execute the pipeline script from your active environment:
+
+Bash
+python3 pipeline.py
+📸 Previews & Output Sample
+Pipeline Execution Output Preview
+When executed successfully, the pipeline outputs the strict security audit findings as a clean JSON string:
+
+JSON
+{
+  "findings": [
+    "The HTTP request does not specify a timeout, so it may hang indefinitely and consume resources if the remote server becomes unresponsive.",
+    "The request does not set an explicit User-Agent header, which can hinder service identification and may cause the request to be blocked or mishandled by some servers.",
+    "HTTP and network exceptions are not caught, so request failures, DNS errors, connection timeouts, and HTTP 4xx/5xx responses will terminate the program with an unhandled exception."
+  ]
+}
