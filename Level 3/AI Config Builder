@@ -1,0 +1,94 @@
+AI Config Builder for Microservices
+Project overview
+This project uses the OpenAI-compatible Chat Completions API to generate
+a Kubernetes Deployment manifest for Nginx, writes the response to
+deployment.yaml, and checks whether the resulting file is valid YAML
+syntax.
+Project location
+/root/openaiproject
+Files
+  File                                Purpose
+  config_builder.py                 Calls the API, saves the generated
+manifest, and validates YAML syntax
+
+  deployment.yaml                   Generated Kubernetes Deployment
+manifest
+venv/                             Python virtual environment
+Requirements
+- Python 3
+- openai
+- PyYAML
+- OPENAI_API_KEY and OPENAI_API_BASE environment variables
+The credentials are loaded from the shell environment. Keep API
+credentials private and do not commit them to source control.
+Setup
+cd /root/openaiproject
+source /root/.bash_profile
+python3 -m venv venv
+source venv/bin/activate
+pip install openai pyyaml
+The packages were already installed in the environment used for this
+run:
+- openai 3.46.0
+- PyYAML 6.0.3
+Both required environment variables were confirmed as set. Their values
+are intentionally not included in this README.
+Implementation
+config_builder.py:
+1. Imports os, yaml, and OpenAI.
+2. Initializes the OpenAI client with OPENAI_API_KEY and
+   OPENAI_API_BASE.
+3. Defines generate_yaml(prompt: str, output_path: str).
+4. Sends the required Nginx Kubernetes Deployment instruction using
+   model gpt-5.6-luna, temperature 0.2, and max_tokens=500.
+5. Writes the API response to the requested output path.
+6. Defines validate_yaml(file_path: str) -> bool, which parses the
+   file using yaml.safe_load.
+7. Runs generation and validation from the main block, printing VALID
+   or INVALID.
+Run
+cd /root/openaiproject
+source /root/.bash_profile
+source venv/bin/activate
+python config_builder.py
+Verified execution preview
+The recorded program output was:
+VALID
+The Python syntax check was also run:
+python -m py_compile config_builder.py
+It completed without reporting a syntax error.
+Generated manifest preview
+The generated deployment.yaml was:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+Validation scope
+The program uses yaml.safe_load to check YAML syntax. The VALID
+result confirms that the generated file could be parsed as YAML. It does
+not establish that the manifest passes Kubernetes API schema
+validation, admission policies, or a deployment in a live Kubernetes
+cluster. No cluster deployment test is recorded for this task.
+Result
+- API generation call completed sufficiently to produce the manifest.
+- deployment.yaml was created and displayed.
+- YAML syntax validation returned VALID.
+- config_builder.py passed py_compile.
