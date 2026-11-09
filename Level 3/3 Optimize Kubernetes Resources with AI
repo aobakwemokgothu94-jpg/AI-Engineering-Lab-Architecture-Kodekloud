@@ -1,0 +1,94 @@
+# AI Kubernetes Resource Optimizer
+
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![OpenAI API](https://img.shields.io/badge/OpenAI-GPT--5.6--Luna-orange.svg)](https://openai.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Workload_Optimization-326CE5.svg)](https://kubernetes.io/)
+[![Conventional Commits](https://img.shields.io/badge/Conventional_Commits-1.0.0-yellow.svg)](https://conventionalcommits.org/)
+
+An intelligent, two-stage AI pipeline designed to automate Kubernetes workload right-sizing. By parsing live deployment manifests alongside Prometheus alert metrics, this tool detects resource bottlenecks (CPU/memory throttling), computes precision-engineered resource blocks, and auto-generates semantic Git commit messages to streamline SRE operational workflows.
+
+---
+
+## 🏗️ Architecture & Pipeline Flow
+
+The optimizer operates as a sequential multi-agent chain:
+
+1. **Stage 1: SRE Resource Analysis (`get_optimized_resources`)**
+   * **Role:** Senior Site Reliability Engineer (SRE).
+   * **Input:** Original Kubernetes deployment YAML (`nginx-deployment.yaml`) and Prometheus alert metrics (`prometheus-alert.txt`).
+   * **Logic:** Analyzes P99 usage profiles to mitigate throttling:
+     * $\text{limits.cpu} = \text{P99} + 100\text{m}$
+     * $\text{limits.memory} = \text{P99} + 50\text{Mi}$
+     * $\text{requests} = \text{limits}$ (Guaranteed QoS alignment)
+   * **Output:** Clean 4-line YAML `resources:` block.
+
+2. **Stage 2: Release Manager Commit Generation (`generate_commit_message`)**
+   * **Role:** Release Manager / GitOps Automation Specialist.
+   * **Input:** Original YAML configuration and the newly calculated resource block.
+   * **Logic:** Evaluates delta changes across compute vectors and formats a standardized git comment.
+   * **Output:** A single-line Conventional Commit message (`perf: ...`).
+
+---
+
+## 📁 Repository Structure
+
+```tree
+openaiproject/
+├── k8s_optimizer.py         # Core two-stage AI automation pipeline
+├── nginx-deployment.yaml    # Target Kubernetes deployment manifest
+├── prometheus-alert.txt     # Production usage & throttling metrics
+├── venv/                    # Isolated Python virtual environment
+└── README.md                # Project documentation
+🚀 Getting Started
+Prerequisites
+Python 3.10+
+
+Access to an OpenAI-compatible endpoint with the gpt-5.6-luna model enabled.
+
+Installation & Environment Setup
+Clone or navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a virtual environment:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+Install dependencies:
+
+Bash
+pip install openai
+Configure API Credentials:
+Ensure your environment variables are set (typically loaded from /root/.bash_profile):
+
+Bash
+source /root/.bash_profile
+export OPENAI_API_KEY="your-api-key"
+export OPENAI_API_BASE="your-base-url"
+⚙️ Usage
+Execute the pipeline script directly from your terminal:
+
+Bash
+python3 k8s_optimizer.py
+Example Output
+Plaintext
+perf: increase nginx CPU and memory requests and limits to 850m and 260Mi
+🛠️ Configuration & Parameters
+Model: gpt-5.6-luna (Utilized across both pipeline stages).
+
+Stage 1 Settings: temperature=0.0, max_tokens=1000 (Deterministic calculation).
+
+Stage 2 Settings: temperature=0.5, max_tokens=500 (Creative summarization for commit messaging).
+
+📄 License
+This project is open-source and licensed under the MIT License.
+
+
+---
+
+### Preview Text for Portfolios / Social Showcases
+
+If you need a concise, high-impact preview block for a portfolio summary or GitHub profile pin, use this snippet:
+
+> **AI Kubernetes Resource Optimizer**: A Python-based two-stage AI agent pipeline that ingests K8s deployment manifests and Prometheus metrics, calculates optimal resource requests/limits ($P99 + \Delta$) to eliminate throttling, and automatically generates Conventional Commit messages (`perf: ...`) for GitOps workflows. Built with OpenAI `gpt-5.6-luna`, structured prompts (`temperature=0.0` / `0.5`), and robust environment isolation.
