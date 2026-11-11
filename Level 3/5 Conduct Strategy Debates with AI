@@ -1,0 +1,210 @@
+# AI Strategy Debate & Synthesis
+
+## 1. Project Overview
+
+This project implements a three-stage AI pipeline that simulates a strategic business meeting involving three executive roles:
+
+- **CMO:** Advocates investment in a world-class e-commerce platform.
+- **CFO:** Advocates modernizing the company's 50 existing physical stores.
+- **CEO:** Evaluates both perspectives and produces a final strategic decision.
+
+The solution uses the OpenAI Python SDK to generate role-based arguments and synthesize them into a one-paragraph executive summary.
+
+## 2. Business Problem
+
+The supplied `business_problem.txt` describes a struggling retail company with `$0M` in capital available for a single major project.
+
+The strategic question is whether to invest in:
+1. Building a world-class e-commerce platform.
+2. Modernizing the company's 50 existing physical stores.
+
+The pipeline uses this original business problem as the input for all three stages.
+
+## 3. Project Structure
+
+```text
+/root/openaiproject/
+├── business_problem.txt
+├── strategy_debate.py
+└── venv/
+```
+
+## 4. Environment Setup
+
+The project was executed in a Python virtual environment.
+
+Create and activate the environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install the OpenAI Python package:
+
+```bash
+pip install openai
+```
+
+The installed OpenAI SDK version was verified as `3.49.0`.
+
+API credentials were loaded from the environment:
+
+```bash
+source /root/.bash_profile
+```
+
+The application reads:
+- `OPENAI_API_KEY`
+- `OPENAI_API_BASE`
+
+Credentials are not stored directly in the Python source code.
+
+## 5. Implementation
+
+### Stage 1: Chief Marketing Officer (CMO)
+
+Function:
+
+```python
+def get_cmo_args(problem: str) -> str:
+```
+
+The CMO is instructed to advocate for the e-commerce platform, focusing on business growth.
+
+Configuration:
+- Model: `gpt-5.6-luna`
+- Temperature: `0.5`
+- Maximum tokens: `250`
+- Output: Three concise bullet points.
+
+### Stage 2: Chief Financial Officer (CFO)
+
+Function:
+
+```python
+def get_cfo_args(problem: str) -> str:
+```
+
+The CFO is instructed to advocate for modernizing the 50 existing physical stores, using a cautious and risk-averse financial perspective.
+
+Configuration:
+- Model: `gpt-5.6-luna`
+- Temperature: `0.5`
+- Maximum tokens: `250`
+- Output: Three concise bullet points.
+
+### Stage 3: Chief Executive Officer (CEO)
+
+Function:
+
+```python
+def get_ceo_decision(problem: str, cmo_args: str, cfo_args: str) -> str:
+```
+
+The CEO receives a combined prompt containing:
+
+1. The original business problem.
+2. The CMO's e-commerce arguments.
+3. The CFO's physical-store arguments.
+
+The CEO evaluates the conflicting advice and generates a final executive decision.
+
+Configuration:
+- Model: `gpt-5.6-luna`
+- Temperature: `0.7`
+- Maximum tokens: `500`
+- Output: One-paragraph executive summary.
+
+## 6. Execution
+
+The script was executed using:
+
+```bash
+cd /root/openaiproject
+source /root/.bash_profile
+source venv/bin/activate
+python strategy_debate.py
+```
+
+Syntax was verified before execution:
+
+```bash
+python -m py_compile strategy_debate.py
+```
+
+Verified result:
+
+```text
+SYNTAX OK
+```
+
+The final execution completed and returned the CEO's executive summary.
+
+## 7. Final AI Decision
+
+The CEO recommended a phased omnichannel modernization programme, beginning with the highest-performing physical stores.
+
+The proposed approach includes:
+
+- Improving inventory accuracy.
+- Modernizing checkout and merchandising.
+- Introducing pickup and returns capabilities.
+- Supporting local delivery and ship-from-store.
+- Building the operational and customer-data foundation for a scalable digital channel.
+- Expanding investment when measurable performance milestones are achieved.
+
+The decision also acknowledges that if `$0M` is literally zero available capital, both major initiatives should be deferred until funding becomes available.
+
+## 8. Verification Results
+
+| Requirement | Result |
+|---|---|
+| OpenAI client initialized | Successful |
+| Business problem loaded | Successful |
+| CMO function implemented | Successful |
+| CFO function implemented | Successful |
+| CEO function implemented | Successful |
+| Both executive arguments included in CEO prompt | Confirmed in source code |
+| Required model configured | Confirmed in source code |
+| Required temperature values configured | Confirmed in source code |
+| Required token limits configured | Confirmed in source code |
+| Python syntax validation | Passed |
+| Final CEO summary generated | Successful |
+
+## 9. Evidence and Previews
+
+Suggested screenshots to capture from the completed lab:
+
+| Screenshot | Evidence |
+|---|---|
+| `01-project-files.png` | Project directory and required files |
+| `02-business-problem.png` | Contents of `business_problem.txt` |
+| `03-strategy-debate-code.png` | Three executive functions in `strategy_debate.py` |
+| `04-virtual-environment.png` | Activated virtual environment and installed OpenAI package |
+| `05-syntax-verification.png` | Successful Python compilation |
+| `06-ceo-final-output.png` | Final executive summary displayed in the terminal |
+
+These are suggested screenshot names, not screenshots already captured.
+
+## 10. Skills Demonstrated
+
+- Python programming and function design.
+- OpenAI API integration.
+- Environment-variable configuration.
+- Role-based AI prompting.
+- Multi-stage AI pipeline development.
+- Prompt construction and context passing.
+- Executive decision synthesis.
+- Python virtual environments and dependency management.
+- Syntax validation and application execution.
+
+## 11. Conclusion
+
+The AI Strategy Debate & Synthesis project was successfully implemented and executed.
+
+The three-stage pipeline demonstrates how AI can simulate different executive perspectives, evaluate competing business strategies, and synthesize their arguments into a final management recommendation.
+
+The completed implementation produced a CEO executive summary recommending phased omnichannel modernization while accounting for the uncertainty in the supplied capital figure.
+
+**Final status: Successfully executed; CEO summary generated.**
