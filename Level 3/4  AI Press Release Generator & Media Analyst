@@ -1,0 +1,104 @@
+# AI Press Release Generator & Media Analyst
+
+This project implements a two-stage automated public relations pipeline using the OpenAI API to generate a professional press release from a product brief and subsequently analyze it from a cynical journalist's perspective to extract the top three toughest questions.
+
+## Project Structure
+
+* `pr_pipeline.py`: The main script containing the two-stage AI workflow.
+* `product_brief.txt`: The input source file containing the product details.
+* `press_release.txt`: The generated press release output file created by Stage 1.
+* `venv/`: Python virtual environment containing required dependencies (`openai`).
+
+## Pipeline Workflow
+
+1. **Stage 1 (The PR Specialist):** Reads `product_brief.txt`, uses model `gpt-5.6-luna` with temperature `0.7` to write a 150-word professional press release, and saves it to `press_release.txt`.
+2. **Stage 2 (The Journalist):** Reads `press_release.txt`, uses model `gpt-5.6-luna` with temperature `0.5` to analyze the release, and outputs a raw JSON object containing `tough_questions`.
+
+## Usage
+
+Activate your virtual environment and run the script:
+
+```bash
+source venv/bin/activate
+source /root/.bash_profile
+python3 pr_pipeline.py
+
+---
+
+### 👁️ Code Preview (`pr_pipeline.py`)
+
+```python
+import os
+from openai import OpenAI
+
+def initialize_client():
+    """Initialize the OpenAI client using environment variables."""
+    api_key = os.environ.get('OPENAI_API_KEY')
+    base_url = os.environ.get('OPENAI_API_BASE')
+    return OpenAI(api_key=api_key, base_url=base_url)
+
+def generate_press_release(brief_path: str, output_path: str):
+    """Reads the product brief and generates a press release via OpenAI."""
+    client = initialize_client()
+    
+    if not os.path.isabs(brief_path):
+        brief_path = os.path.join("/root/openaiproject", brief_path)
+    if not os.path.isabs(output_path):
+        output_path = os.path.join("/root/openaiproject", output_path)
+
+    with open(brief_path, "r", encoding="utf-8") as f:
+        brief_content = f.read()
+
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a PR specialist. Based on this product brief, write an exciting, 150-word professional press release."
+            },
+            {
+                "role": "user",
+                "content": brief_content
+            }
+        ],
+        temperature=0.7,
+        max_tokens=1500
+    )
+
+    press_release_text = response.choices[0].message.content
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(press_release_text)
+
+def analyze_press_release(pr_path: str) -> str:
+    """Reads the generated press release and analyzes it for tough questions, returning raw JSON."""
+    client = initialize_client()
+
+    if not os.path.isabs(pr_path):
+        pr_path = os.path.join("/root/openaiproject", pr_path)
+
+    with open(pr_path, "r", encoding="utf-8") as f:
+        pr_content = f.read()
+
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a cynical, skeptical tech journalist. Read the following press release. Identify the 'Top 3 Toughest Questions' a journalist would ask about this product. Return a JSON object with a single key tough_questions, which is a list of strings. Your response must contain only the raw JSON object, with no additional text, explanations, or Markdown code fences."
+            },
+            {
+                "role": "user",
+                "content": pr_content
+            }
+        ],
+        temperature=0.5,
+        max_tokens=1500
+    )
+
+    return response.choices[0].message.content.strip()
+
+if __name__ == "__main__":
+    generate_press_release('product_brief.txt', 'press_release.txt')
+    analysis_result = analyze_press_release('press_release.txt')
+    print(analysis_result)
