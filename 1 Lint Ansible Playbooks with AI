@@ -1,0 +1,111 @@
+Project: Ansible Playbook Generator & Linter
+Overview
+The Ansible Playbook Generator & Linter is an advanced two-stage AI automation pipeline that simulates an automated infrastructure provisioning and code-review workflow. Built using Python and OpenAI (gpt-5.6-luna), the pipeline first acts as an Ansible Expert to transform natural-language task specifications into production-ready YAML playbooks, then switches into an Ansible Linter persona to rigorously audit the generated code for security, privilege escalation, and best-practice compliance.
+
+Features
+Zero-Temperature Code Generation: Configured with strict determinism (temperature=0.0) to ensure syntactically accurate Ansible playbooks using apt, service, and ufw modules.
+
+Automated Best-Practice Auditing: Employs a specialized system persona (ansible-lint) to check for common pitfalls such as missing task names, missing privilege escalation (become: yes), and suboptimal package states (state: latest).
+
+Strict JSON Extraction: Returns structured, machine-parsable JSON output containing exact lint error summaries (lint_errors) for continuous integration (CI) readiness.
+
+Project Structure
+Plaintext
+/root/openaiproject/
+├── venv/                 # Python Virtual Environment
+├── task.txt              # Input natural-language task requirements
+├── playbook.yaml         # Generated Ansible playbook artifact
+└── ansible_pipeline.py   # Two-stage generation and linting script
+Code Implementation (ansible_pipeline.py)
+Python
+import os
+from openai import OpenAI
+
+# Initialize OpenAI Client using credentials from /root/.bash_profile
+api_key = os.environ.get('OPENAI_API_KEY')
+base_url = os.environ.get('OPENAI_API_BASE')
+
+client = OpenAI(
+    api_key=api_key,
+    base_url=base_url
+)
+
+def generate_playbook(task_path: str, output_path: str):
+    """Read task instructions and generate an Ansible playbook using OpenAI API."""
+    full_task_path = os.path.join('/root/openaiproject', task_path)
+    full_output_path = os.path.join('/root/openaiproject', output_path)
+    
+    with open(full_task_path, 'r') as f:
+        task_content = f.read()
+        
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {
+                "role": "user",
+                "content": f"You are an Ansible expert. Based on this task, write a complete, valid Ansible playbook. Use the apt and service/ufw modules. Respond ONLY with the raw YAML, with no Markdown fences (```yaml).\n\nTask:\n{task_content}"
+            }
+        ],
+        temperature=0.0
+    )
+    
+    message = response.choices[0].message
+    playbook_text = getattr(message, 'content', None) or ""
+    
+    os.makedirs(os.path.dirname(full_output_path), exist_ok=True)
+    with open(full_output_path, 'w') as f:
+        f.write(playbook_text)
+
+def lint_playbook(playbook_path: str) -> str:
+    """Read the generated playbook, lint it using ansible-lint persona, and return raw JSON."""
+    full_playbook_path = os.path.join('/root/openaiproject', playbook_path)
+    
+    with open(full_playbook_path, 'r') as f:
+        playbook_content = f.read()
+        
+    response = client.chat.completions.create(
+        model="gpt-5.6-luna",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are ansible-lint. Review this playbook. Check for: 1) Missing name on any tasks. 2) Missing become: yes for privileged tasks (like apt or service). 3) Using state: latest for packages. Return a JSON object with a single key lint_errors, which is a list of strings. If there are no issues, return an empty list. Respond ONLY with the raw JSON."
+            },
+            {
+                "role": "user",
+                "content": playbook_content
+            }
+        ],
+        temperature=0.1,
+        max_tokens=250
+    )
+    
+    message = response.choices[0].message
+    content = getattr(message, 'content', None) or ""
+    return content.strip()
+
+if __name__ == "__main__":
+    os.chdir("/root/openaiproject")
+    
+    # Step 1: Generate playbook
+    generate_playbook('task.txt', 'playbook.yaml')
+    
+    # Step 2: Lint playbook and output raw JSON result
+    result_json = lint_playbook('playbook.yaml')
+    print(result_json)
+Sample JSON Output Preview
+When executed against a compliant playbook, the linter confirms adherence to best practices with an empty error list:
+
+JSON
+{
+  "lint_errors": []
+}
+Quick Start & Usage
+Navigate to the workspace and activate the virtual environment:
+
+Bash
+cd /root/openaiproject
+source venv/bin/activate
+Execute the automation pipeline:
+
+Bash
+python ansible_pipeline.py
