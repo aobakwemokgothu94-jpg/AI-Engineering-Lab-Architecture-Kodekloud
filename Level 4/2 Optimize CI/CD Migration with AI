@@ -1,0 +1,50 @@
+# CI/CD Migration & Optimization Pipeline
+
+An automated, three-stage AI pipeline designed to migrate legacy shell-based build scripts into modern GitHub Actions workflows, optimize performance by incorporating dependency caching, and generate a standardized conventional commit message.
+
+## Overview & Architecture
+
+1. **Stage 1 (`generate_workflow`)**: 
+   - Reads the legacy shell script (`build.sh`) from `/root/openaiproject`.
+   - Utilizes the OpenAI client (`gpt-5.6-luna`, `temperature=0.0`) acting as a **DevOps Expert** to convert the script into a complete GitHub Actions workflow YAML.
+   - Saves the output as `main.yml`.
+
+2. **Stage 2 (`optimize_workflow`)**:
+   - Takes the YAML generated in Stage 1 as input.
+   - Utilizes the OpenAI client (`gpt-5.6-luna`, `temperature=0.0`) acting as a **CI/CD Performance Specialist** to insert an explicit caching step (`actions/cache`) before dependencies are installed via `pip`.
+   - Saves the optimized output as `main-optimized.yml`.
+
+3. **Stage 3 (`generate_commit`)**:
+   - Takes both the original and optimized workflow YAML strings.
+   - Utilizes the OpenAI client (`gpt-5.6-luna`, `temperature=0.5`) acting as a **Tech Lead** to analyze the structural changes and formulate a concise, single-line conventional commit message.
+
+## Execution Requirements
+
+- **Working Directory:** `/root/openaiproject`
+- **Environment Setup:**
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install openai
+Credentials: Loaded from /root/.bash_profile (OPENAI_API_KEY and OPENAI_API_BASE).
+
+Running the Pipeline
+Execute the automation script:
+
+Bash
+source /root/.bash_profile
+python3 ci_pipeline.py
+
+---
+
+### Task Preview Summary
+
+* **Task Name:** CI/CD Migration & Optimization Pipeline (`ci_pipeline.py`)
+* **Model Used:** `gpt-5.6-luna`
+* **Artifacts Generated:** 
+  * `main.yml` (Migrated GitHub Actions workflow)
+  * `main-optimized.yml` (Optimized workflow with caching)
+* **Final Output Produced:** 
+  ```text
+  ci: replace setup-python pip caching with explicit actions/cache step
+Status: Fully executed, verified
