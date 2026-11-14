@@ -1,0 +1,62 @@
+# Docker Stack Architect & Network Analyst
+
+An AI-driven DevOps automation pipeline built to evaluate multi-stage LLM roles in infrastructure design and networking analysis.
+
+## Overview
+
+This project implements a two-stage Python automation script (`docker_stack.py`) that leverages the OpenAI API (`gpt-5.6-luna`) to transition between two distinct expert personas:
+1. **The DevOps Architect**: Reads an application specification (`app_spec.txt`) and generates a valid, production-ready `docker-compose.yml` file.
+2. **The Network Analyst**: Reads the generated Docker Compose configuration and analyzes internal service-discovery mechanisms and network exposure security.
+
+---
+
+## Project Structure
+
+```text
+/root/openaiproject/
+│
+├── app_spec.txt          # Input application specification
+├── docker_stack.py       # Main two-stage automation script
+├── docker-compose.yml    # Generated container stack configuration
+└── README.md             # Project documentation
+Prerequisites & Installation
+Ensure your shell environment has access to the required OpenAI API credentials stored in /root/.bash_profile.
+
+Navigate to the project directory:
+
+Bash
+cd /root/openaiproject
+Create and activate a Python virtual environment:
+
+Bash
+python3 -m venv venv
+source venv/bin/activate
+Install dependencies:
+
+Bash
+pip install openai
+Usage
+Load your environment variables and execute the script:
+
+Bash
+source /root/.bash_profile
+python3 docker_stack.py
+Execution Flow
+Stage 1: generate_compose('app_spec.txt', 'docker-compose.yml') runs with temperature=0.0 to ensure deterministic, valid YAML generation.
+
+Stage 2: analyze_networking('docker-compose.yml') runs with temperature=0.5 and max_tokens=300 to produce a precise, single-paragraph network analysis.
+
+Output: Prints the final network analysis explanation directly to stdout.
+
+License
+This project is part of the DevOps AI Engineering Division hands-on lab series.
+
+
+---
+
+## Execution & Verification Preview
+
+Once you run the script, the terminal outputs the final network analysis summary:
+
+```text
+The `web` service can connect to PostgreS
