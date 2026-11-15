@@ -1,0 +1,120 @@
+# SRE Incident Response & Playbook Generator
+
+An AI-augmented Site Reliability Engineering (SRE) pipeline built in Python that automates incident triage, dependency mapping, and markdown playbook generation.
+
+## 🚀 Overview
+
+1. **The Triage Bot (`parse_alert`)**: Parses raw alert text into structured JSON containing `service_name` and `symptom`.
+2. **The Service Catalog (`get_dependencies`)**: Queries service dependency topologies to return downstream dependent services.
+3. **The Incident Commander (`generate_playbook`)**: Takes the symptom and dependency context to construct a step-by-step Markdown incident response playbook starting with a dedicated `## Problem` section.
+
+---
+
+## ⚙️ Setup & Execution
+
+1. **Navigate to the directory**:
+   ```bash
+   cd /root/openaiproject
+Initialize virtual environment and install dependencies:
+
+Bash
+python3 -m venv venv && source venv/bin/activate && pip install openai
+Run the pipeline:
+
+Bash
+python3 incident_pipeline.py
+📜 Project Script (incident_pipeline.py)
+Python
+import os
+import json
+from openai import OpenAI
+
+# Initialize OpenAI client using environment variables
+api_key = os.environ.get('OPENAI_API_KEY')
+base_url = os.environ.get('OPENAI_API_BASE')
+
+client = OpenAI(api_key=api_key, base_url=base_url)
+MODEL_NAME = "gpt-5.6-luna"
+
+def parse_alert(alert_content: str) -> str:
+    """Function 1: The Triage Bot"""
+    prompt = (
+        "Parse the following alert content and return a JSON object with two keys: "
+        "'service_name' (string) and 'symptom' (string).\n\n"
+        f"Alert Content:\n{alert_content}\n\n"
+        "Respond ONLY with the raw JSON string."
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+    return response.choices[0].message.content.strip()
+
+def get_dependencies(service_name: str) -> str:
+    """Function 2: The Service Catalog"""
+    prompt = (
+        f"What are the direct downstream dependencies for the '{service_name}'?\n"
+        "Respond ONLY with a raw JSON list of service names (e.g., [\"payment-service\", \"inventory-db\"])."
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+    return response.choices[0].message.content.strip()
+
+def generate_playbook(symptom: str, dependencies: list) -> str:
+    """Function 3: The Incident Commander"""
+    prompt = (
+        f"Write a step-by-step incident response playbook in Markdown.\n"
+        f"Symptom: {symptom}\n"
+        f"Dependencies: {dependencies}\n\n"
+        "The playbook MUST start with a '## Problem' section that restates the exact symptom, followed by the dependencies to check."
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.5
+    )
+    return response.choices[0].message.content.strip()
+
+if __name__ == "__main__":
+    # Step 1: Read the content of prometheus_alert.txt
+    with open("prometheus_alert.txt", "r") as f:
+        alert_content = f.read()
+
+    # Call 1: Parse Alert
+    json_str_1 = parse_alert(alert_content)
+    parsed_alert = json.loads(json_str_1)
+    
+    service_name = parsed_alert.get("service_name")
+    symptom = parsed_alert.get("symptom")
+
+    # Call 2: Get Dependencies
+    json_str_2 = get_dependencies(service_name)
+    dependencies = json.loads(json_str_2)
+
+    # Call 3: Generate Playbook
+    playbook = generate_playbook(symptom, dependencies)
+
+    # Print the final raw Markdown playbook string
+    print(playbook)
+📄 Output Preview
+Markdown
+## Problem
+
+**Symptom:** 5% of requests are taking > 3s.
+
+**Dependencies to check:**
+- `payment-service`
+- `inventory-service`
+- `cart-service`
+
+## 1. Declare and Scope the Incident
+1. Create or update the incident ticket.
+2. Assign an incident commander and communications owner.
+...
