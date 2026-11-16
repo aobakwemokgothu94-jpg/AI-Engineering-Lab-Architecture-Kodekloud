@@ -1,0 +1,111 @@
+Docker Stack Architect & Network Analyst
+Overview
+This project implements an intelligent, multi-stage DevOps pipeline (docker_stack.py) that leverages OpenAI's gpt-5.6-luna model to bridge infrastructure provisioning and network analysis.
+
+The system operates in two distinct phases:
+
+The DevOps Architect: Reads an application specification (app_spec.txt) and autonomously generates a production-grade, containerized docker-compose.yml stack with secure environment variable management and service dependencies.
+
+The Network Analyst: Parses the generated Docker Compose configuration to evaluate and explain internal service discovery mechanisms, container networking, and host port exposure security.
+
+Architecture & Pipeline Flow
+[ app_spec.txt ] ---> Phase 1: DevOps Architect (Temp: 0.0) ---> [ docker-compose.yml ]
+                   ---> Phase 2: Network Analyst (Temp: 0.5) ---> [ Single-Paragraph Networking Explanation ]
+Complete Implementation (docker_stack.py)
+Python
+import os
+from openai import OpenAI
+
+# Initialize the OpenAI client using environment variables from /root/.bash_profile
+api_key = os.environ.get("OPENAI_API_KEY")
+base_url = os.environ.get("OPENAI_API_BASE")
+
+client = OpenAI(
+    api_key=api_key,
+    base_url=base_url
+)
+
+MODEL_NAME = "gpt-5.6-luna"
+
+def generate_compose(spec_path: str, output_path: str):
+    """
+    Function 1 (The Architect): Reads app_spec.txt, generates docker-compose.yml,
+    and saves it to the specified output path with temperature=0.0.
+    """
+    with open(spec_path, "r") as f:
+        spec_content = f.read()
+        
+    prompt = (
+        "You are a DevOps Architect. Based on this app spec, write a complete, valid docker-compose.yml file. "
+        "The web service must depend on db and cache. Use environment variables for the Postgres password. "
+        "Respond ONLY with the raw YAML, with no Markdown fences (```yaml).\n\n"
+        f"App Spec:\n{spec_content}"
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+    
+    yaml_output = response.choices[0].message.content.strip()
+    
+    with open(output_path, "w") as f:
+        f.write(yaml_output)
+
+def analyze_networking(compose_path: str) -> str:
+    """
+    Function 2 (The Analyst): Reads the generated docker-compose.yml and explains internal 
+    networking and service discovery in a single paragraph (temperature=0.5, max_tokens=300).
+    """
+    with open(compose_path, "r") as f:
+        compose_content = f.read()
+        
+    system_prompt = (
+        "You are a network engineer. Read this Docker Compose file. "
+        "In a single paragraph, explain how the web service can connect to the db service "
+        "(mentioning service discovery names) and why the db port does not need to be exposed to the host machine."
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": compose_content}
+        ],
+        temperature=0.5,
+        max_tokens=300
+    )
+    
+    return response.choices[0].message.content.strip()
+
+def main():
+    os.chdir("/root/openaiproject")
+    
+    # 1. Generate Docker Compose stack
+    generate_compose('app_spec.txt', 'docker-compose.yml')
+    
+    # 2. Analyze network configuration
+    explanation = analyze_networking('docker-compose.yml')
+    
+    # 3. Print final networking explanation
+    print(explanation)
+
+if __name__ == "__main__":
+    main()
+Execution Guide
+Set Up the Virtual Environment & Dependencies:
+
+Bash
+cd /root/openaiproject
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+Source Credentials:
+
+Bash
+source /root/.bash_profile
+Execute the Pipeline:
+
+Bash
+python3 docker_stack.py
