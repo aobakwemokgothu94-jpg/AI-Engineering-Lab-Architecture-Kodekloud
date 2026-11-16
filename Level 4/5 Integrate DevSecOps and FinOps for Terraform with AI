@@ -1,0 +1,153 @@
+Terraform DevSecOps & FinOps Auditor
+Overview
+This project builds an automated, three-stage AI auditing system that acts as a Security Linter, a FinOps Analyst, and a Senior SRE. The system scans Infrastructure-as-Code (main.tf) for security vulnerabilities (such as open SSH ports 0.0.0.0/0) and costly compute inefficiencies (such as m5.2xlarge instances), then programmatically rewrites the configuration into a compliant, optimized state (fixed_main.tf).
+
+Architecture & Pipeline
+[ main.tf ] ---> Stage 1: Security Scan (Linter)  ---> [ Security JSON Report ] 
+             ---> Stage 2: Cost Scan (FinOps)      ---> [ Cost JSON Report     ] ---> Stage 3: SRE Code Rewrite ---> [ fixed_main.tf ]
+Security Linter (security_scan): Evaluates IAM policies, network security groups, and encryption defaults at temperature=0.0.
+
+FinOps Analyst (cost_scan): Identifies over-provisioned cloud resources and maps them to cost-effective right-sized alternatives (e.g., downsizing from m5.2xlarge to t3.micro) at temperature=0.0.
+
+Senior SRE (apply_fixes): Synthesizes both reports with the original infrastructure definition to output clean, production-ready HCL at temperature=0.0.
+
+Complete Implementation (tf_auditor.py)
+Python
+import os
+import json
+from openai import OpenAI
+
+# Initialize the OpenAI client using environment variables from /root/.bash_profile
+api_key = os.environ.get("OPENAI_API_KEY")
+base_url = os.environ.get("OPENAI_API_BASE")
+
+client = OpenAI(
+    api_key=api_key,
+    base_url=base_url
+)
+
+MODEL_NAME = "gpt-5.6-luna"
+
+def security_scan(tf_content: str) -> str:
+    """
+    Acts as a Security Linter to identify security vulnerabilities (e.g. 0.0.0.0/0, missing encryption).
+    Returns a JSON list of issues.
+    """
+    prompt = (
+        "You are an expert Security Linter. Analyze the following Terraform configuration "
+        "and identify any security vulnerabilities (such as open SSH ports like 0.0.0.0/0 or missing encryption). "
+        "Return your findings strictly as a JSON list of objects containing details about each issue.\n\n"
+        f"Terraform Content:\n{tf_content}"
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+    return response.choices[0].message.content
+
+def cost_scan(tf_content: str) -> str:
+    """
+    Acts as a FinOps Analyst to identify expensive resources and suggest cheaper alternatives.
+    Returns a JSON list of issues.
+    """
+    prompt = (
+        "You are an expert FinOps Analyst. Analyze the following Terraform configuration "
+        "and identify costly compute or storage resources (e.g., m5.2xlarge), suggesting cheaper, "
+        "equivalent alternatives (like t3.micro). Return your findings strictly as a JSON list of objects.\n\n"
+        f"Terraform Content:\n{tf_content}"
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0
+    )
+    return response.choices[0].message.content
+
+def apply_fixes(tf_content: str, sec_issues: str, cost_issues: str) -> str:
+    """
+    Acts as a Senior SRE to rewrite the entire main.tf file addressing all security and cost findings.
+    Returns valid HCL code.
+    """
+    prompt = (
+        "You are a Senior Site Reliability Engineer (SRE). Given the original Terraform configuration, "
+        "along with the security vulnerability report and the FinOps cost report, rewrite the entire "
+        "main.tf file to fully address and fix all identified issues (lock down security groups, optimize instance types). "
+        "Return ONLY valid HCL code without extra markdown text formatting outside of standard blocks if possible, "
+        "or ensure the output is clean valid Terraform HCL."
+    )
+    
+    user_content = (
+        f"Original Terraform:\n{tf_content}\n\n"
+        f"Security Issues Report:\n{sec_issues}\n\n"
+        f"Cost Issues Report:\n{cost_issues}"
+    )
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": user_content}
+        ],
+        temperature=0.0
+    )
+    return response.choices[0].message.content
+
+def main():
+    os.chdir("/root/openaiproject")
+    
+    # 1. Read original main.tf
+    with open("main.tf", "r") as f:
+        tf_content = f.read()
+        
+    print("Running Security Scan...")
+    sec_issues = security_scan(tf_content)
+    
+    print("Running Cost Scan...")
+    cost_issues = cost_scan(tf_content)
+    
+    print("Applying Fixes & Generating fixed_main.tf...")
+    fixed_hcl = apply_fixes(tf_content, sec_issues, cost_issues)
+    
+    # Clean up markdown code block wrappers if returned by the model
+    if "```" in fixed_hcl:
+        lines = fixed_hcl.splitlines()
+        filtered_lines = []
+        recording = False
+        for line in lines:
+            if line.startswith("```"):
+                if recording:
+                    break
+                else:
+                    recording = True
+                    continue
+            if recording or not any(l.startswith("```") for l in lines):
+                filtered_lines.append(line)
+        fixed_hcl = "\n".join(filtered_lines).strip()
+
+    # Save the corrected file as fixed_main.tf
+    with open("fixed_main.tf", "w") as f:
+        f.write(fixed_hcl)
+        
+    print("Fixed Terraform file successfully generated at /root/openaiproject/fixed_main.tf")
+
+if __name__ == "__main__":
+    main()
+Execution Guide
+Set Up the Virtual Environment & Dependencies:
+
+Bash
+cd /root/openaiproject
+python3 -m venv venv
+source venv/bin/activate
+pip install openai
+Source Environment Variables:
+
+Bash
+source /root/.bash_profile
+Run the Auditor:
+
+Bash
+python3 tf_auditor.py
